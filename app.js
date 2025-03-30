@@ -277,24 +277,28 @@ document.addEventListener("DOMContentLoaded", () => {
   function displayResult({ root, iterations }, epsilon) {
     const precisionResult = roundToPrecision(root, epsilon);
     document.getElementById("output").innerHTML = `
-          Корень: ${precisionResult}<br>
-          Итераций: ${iterations.length}
-      `;
-    document.getElementById("iterations").textContent = iterations
-      .map((iter, i) => `Итерация ${i + 1}:\n${JSON.stringify(iter, null, 2)}`)
-      .join("\n\n");
-  }
+        Корень: ${precisionResult}<br>
+        Итераций: ${iterations.length}
+    `;
+    const iterationsElement = document.getElementById("iterations");
+    iterationsElement.style.display = "block";
+    iterationsElement.textContent = iterations
+        .map((iter, i) => `Итерация ${i + 1}:\n${JSON.stringify(iter, null, 2)}`)
+        .join("\n\n");
+}
 
-  function showError(message) {
+function showError(message) {
+    document.getElementById("iterations").style.display = "none";
     document.getElementById("error").textContent = message;
     document.getElementById("error").style.display = "block";
-  }
+}
 
-  function clearOutput() {
+function clearOutput() {
     document.getElementById("output").innerHTML = "";
     document.getElementById("iterations").textContent = "";
     document.getElementById("error").style.display = "none";
-  }
+    document.getElementById("iterations").style.display = "none";
+}
 
   function roundToPrecision(root, epsilon) {
     const decimalPlaces = Math.max(
