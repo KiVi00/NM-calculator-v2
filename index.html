@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Итерационные методы</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/14.2.1/math.js"
+      integrity="sha512-ZOpEWF/zdnWKFpyY0TMzmZGkhjM9Z4RkW/GMF9X9NtZ6bhDqzAlWfk7NwqHPD+WriepCt3Th6+4jl4w4wkQolA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Решение уравнений</h1>
+      <form id="calculatorForm">
+        <div class="input-group">
+          <label for="expression">Функция f(x)</label>
+          <input
+            type="text"
+            id="expression"
+            required
+            placeholder="Пример: 2*log(x) - x^2 + 5"
+          />
+        </div>
+        <div class="input-group">
+          <label for="accuracy">Точность (ε)</label>
+          <input
+            type="number"
+            id="accuracy"
+            step="0.001"
+            min="0.001"
+            max="1"
+            value="0.001"
+            maxlength="17"
+            required
+          />
+        </div>
+        <div class="input-group" id="x0-group">
+          <label for="x0-all">Начальное приближение (x0)</label>
+          <input type="number" id="x0-all" step="any" />
+        </div>
+
+        <div class="input-group" id="x1-group">
+          <label for="x1">Начальное приближение (x1)</label>
+          <input type="number" id="x1" step="any" />
+        </div>
+
+        <div class="input-group" id="derivative-group" style="display: none">
+          <label for="derivative"
+            >Производная f'(x)
+            <span class="hint">(автоматически генерируется)</span></label
+          >
+          <input
+            type="text"
+            id="derivative"
+            placeholder="Пример: (2/x) - 2*x"
+            readonly
+          />
+        </div>
+        <div class="input-group" id="newton-group" style="display: none">
+          <label for="x0">Начальное приближение (x0)</label>
+          <input type="number" id="x0" step="any" />
+        </div>
+        <fieldset class="methods-group">
+          <legend>Метод решения:</legend>
+          <div class="radio-group">
+            <input
+              type="radio"
+              id="bisection"
+              name="method"
+              value="bisection"
+              checked
+            />
+            <label for="bisection">Метод бисекции</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="newton" name="method" value="newton" />
+            <label for="newton">Метод Ньютона</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="chord" name="method" value="chord" />
+            <label for="chord">Метод хорд</label>
+          </div>
+          <div class="radio-group">
+            <input type="radio" id="secant" name="method" value="secant" />
+            <label for="secant">Метод секущих</label>
+          </div>
+          <div class="radio-group">
+            <input
+              type="radio"
+              id="golden-section"
+              name="method"
+              value="golden-section"
+            />
+            <label for="golden-section">Метод золотого сечения</label>
+          </div>
+        </fieldset>
+        <div class="button-container">
+          <button type="button" id="solve">Решить</button>
+        </div>
+      </form>
+
+      <section id="results">
+        <h2>Результаты</h2>
+        <div id="output"></div>
+        <div id="error" class="error-message"></div>
+        <pre id="iterations"></pre>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
