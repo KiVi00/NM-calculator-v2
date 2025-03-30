@@ -103,7 +103,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function bisectionMethod(f, epsilon) {
     let x0 = parseFloat(x0all.value);
-    let x1= parseFloat(x1all.value);
+    let x1 = parseFloat(x1all.value);
     if (isNaN(x0)) throw new Error("x0 не является числом");
     if (isNaN(x1)) throw new Error("x1 не является числом");
     if (f(x0) * f(x1) >= 0)
@@ -123,10 +123,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (Math.abs(f(c)) < epsilon) break;
 
-      if (f(c) * f(x0) < 0) b = c;
+      if (f(c) * f(x0) < 0) x1 = c;
       else x0 = c;
-    } while (Math.abs(x1 - x0) > epsilon);
+    } while (Math.abs(x1 - x0) > epsilon && iterations.length < 1000);
 
+    if (iterations.length >= 1000) throw new Error("Превышено макс. итераций");
     return { root: c, iterations };
   }
 
@@ -147,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const nextX = x - fx / dfx;
       iterations.push({ x, fx, dfx, nextX });
       x = nextX;
-    } while (Math.abs(f(x)) > epsilon && iterations.length < 10000);
+    } while (Math.abs(f(x)) > epsilon && iterations.length < 1000);
 
     if (iterations.length >= 1000) throw new Error("Превышено макс. итераций");
     return { root: x, iterations };
@@ -218,7 +219,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let b = parseFloat(document.getElementById("x1").value);
     const iterations = [];
 
-    if (f(a) * f(b) >= 0) throw new Error("Нет корня в интервале");
+    if (f(a) * f(b) >= 0) throw new Error("Нет корня в интервале, либо на интервале несколько корней");
 
     let x1 = b - (b - a) / phi;
     let x2 = a + (b - a) / phi;
