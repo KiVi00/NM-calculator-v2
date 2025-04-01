@@ -32,10 +32,13 @@ document.addEventListener("DOMContentLoaded", () => {
       case "golden-section":
       case "secant":
         groups.x0all.style.display = groups.x1.style.display = "block";
+        document.getElementById("derivative-display").style.display = "none";
         break;
       case "newton":
         groups.newton.style.display = "block";
         groups.derivative.style.display = "block";
+        document.getElementById("derivative-display").style.display = "block";
+
         break;
     }
   }
@@ -57,11 +60,32 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const expr = expressionInput.value;
       if (!expr) return;
-
+  
       const f = math.parse(expr);
-      const derivative = math.derivative(f, "x").toString();
-      derivativeInput.value = derivative;
+      const derivative = math.derivative(f, "x");
+      
+      // Генерация LaTeX
+      const latexFunc = f.toTex();
+      const latexDeriv = derivative.toTex();
+  
+      // Обновление отображения формул
+      document.getElementById("function-display").innerHTML = `
+        Функция: $\\displaystyle ${latexFunc}$`;
+      
+      document.getElementById("derivative-display").innerHTML = `
+        Производная: $\\displaystyle ${latexDeriv}$`;
+  
+      // Обновление MathJax
+      MathJax.typesetPromise();
+      
+      // Для текстового поля производной (опционально)
+      derivativeInput.value = derivative.toString();
+  
     } catch (e) {
+      document.getElementById("function-display").innerHTML = 
+        "Ошибка в функции";
+      document.getElementById("derivative-display").innerHTML = 
+        "Ошибка в производной";
       derivativeInput.value = "Не удалось вычислить";
     }
   }
@@ -280,6 +304,7 @@ document.addEventListener("DOMContentLoaded", () => {
         Корень: ${precisionResult}<br>
         Итераций: ${iterations.length}
     `;
+    MathJax.typesetPromise(); // Обновить рендер после изменения содержимого
     const iterationsElement = document.getElementById("iterations");
     iterationsElement.style.display = "block";
     iterationsElement.textContent = iterations

@@ -101,3 +101,15 @@ pre {
 input[type="radio"] {
     accent-color: #4d83bb;
 }
+
+#formulas div {
+    margin: 10px 0;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 4px;
+  }
+  
+  mjx-container {
+    display: inline-block!important;
+    margin: 0 0.15em!important;
+  }
