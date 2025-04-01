@@ -14,11 +14,19 @@
     <script>
       MathJax = {
         tex: {
-          inlineMath: [['$', '$'], ['\\(', '\\)']]
-        }
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+        },
       };
     </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js" integrity="sha512-T8xxpazDtODy3WOP/c6hvQI2O9UPdARlDWE0CvH1Cfqc0TXZF6GZcEKL7tIR8VbfS/7s/J6C+VOqrD6hIo++vQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"
+      integrity="sha512-T8xxpazDtODy3WOP/c6hvQI2O9UPdARlDWE0CvH1Cfqc0TXZF6GZcEKL7tIR8VbfS/7s/J6C+VOqrD6hIo++vQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
   </head>
   <body>
     <div class="container">
@@ -55,7 +63,6 @@
           <label for="x1">Начальное приближение (x1)</label>
           <input type="number" id="x1" step="any" />
         </div>
-
         <div class="input-group" id="derivative-group" style="display: none">
           <label for="derivative"
             >Производная f'(x)
@@ -112,7 +119,7 @@
       </form>
 
       <section id="results">
-        <h2>Результаты</h2>
+        <h2 id="h2-results">Результаты</h2>
         <div id="formulas">
           <div id="function-display"></div>
           <div id="derivative-display"></div>
@@ -121,8 +128,77 @@
         <div id="error" class="error-message"></div>
         <pre id="iterations"></pre>
       </section>
-    </div>
+      <section id="help">
+        <h2 class="help-h2">Запись операций и функций</h2>
+        <div class="help-container">
+          <div class="help-section">
+            <h3>Арифметические операции</h3>
+            <ul>
+              <li><code>+</code> Сложение (2 + 3)</li>
+              <li><code>-</code> Вычитание (5 - 2)</li>
+              <li><code>*</code> Умножение (3 * 4)</li>
+              <li><code>/</code> Деление (6 / 2)</li>
+              <li><code>^</code> Возведение в степень (2^3 = 8)</li>
+            </ul>
+          </div>
 
+          <div class="help-section">
+            <h3>Элементарные функции</h3>
+            <ul>
+              <li><code>sqrt(x)</code> Квадратный корень</li>
+              <li><code>abs(x)</code> Модуль числа</li>
+              <li><code>exp(x)</code> Экспонента (e^x)</li>
+              <li><code>log(x)</code> Натуральный логарифм</li>
+              <li><code>log10(x)</code> Десятичный логарифм</li>
+              <li><code>log(x, y)</code> Логарифм по основанию y</li>
+              <li><code>factorial(x)</code> Факториал (5! = 120)</li>
+            </ul>
+          </div>
+
+          <div class="help-section">
+            <h3>Тригонометрические функции</h3>
+            <ul>
+              <li><code>sin(x)</code> Синус</li>
+              <li><code>cos(x)</code> Косинус</li>
+              <li><code>tan(x)</code> Тангенс</li>
+              <li><code>asin(x)</code> Арксинус</li>
+              <li><code>acos(x)</code> Арккосинус</li>
+              <li><code>atan(x)</code> Арктангенс</li>
+            </ul>
+          </div>
+
+          <div class="help-section">
+            <h3>Константы</h3>
+            <ul>
+              <li><code>pi</code> Число π (3.14159...)</li>
+              <li><code>e</code> Число e (2.71828...)</li>
+            </ul>
+          </div>
+
+          <div class="help-section">
+            <h3>Примеры выражений</h3>
+            <ul class="examples">
+              <li><code>2*x^2 - 3*x + 5</code></li>
+              <li><code>sin(x) + cos(2*x)</code></li>
+              <li><code>exp(-x^2) * log(x)</code></li>
+              <li><code>sqrt(1 - x^2)</code></li>
+              <li><code>abs(x - 5)</code></li>
+            </ul>
+          </div>
+
+          <div class="help-section">
+            <h3>Примеры выражений</h3>
+            <ul class="examples">
+                <li><code>(x^3 + 5)/(2x - tan(x))</code></li>
+                <li><code>sin(pi*x/2) + cos(e^x)</code></li>
+                <li><code>log(x, 2) * sqrt(abs(x))</code></li>
+                <li><code>1/(1 + exp(-(x - 5)))</code>
+                <li><code>factorial(x) - 3^x</code></li>
+            </ul>
+        </div>
+        </div>
+      </section>
+    </div>
     <script src="app.js"></script>
   </body>
 </html>

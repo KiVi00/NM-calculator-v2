@@ -15,11 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
     newton: document.getElementById("newton-group"),
   };
 
-  methods.forEach((method) =>
-    method.addEventListener("change", updateInputFields)
-  );
-  expressionInput.addEventListener("blur", updateDerivative);
+  methods.forEach((method) => {
+    method.addEventListener("change", () => {
+      updateInputFields();
+      document.getElementById("results").style.display = "none";
+    });
+  });
+
   document.getElementById("solve").addEventListener("click", solve);
+  document.getElementById("solve").addEventListener("click", updateDerivative);
 
   function updateInputFields() {
     const method = document.querySelector('input[name="method"]:checked').value;
@@ -36,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
         break;
       case "newton":
         groups.newton.style.display = "block";
-        groups.derivative.style.display = "block";
         document.getElementById("derivative-display").style.display = "block";
 
         break;
@@ -60,31 +63,30 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const expr = expressionInput.value;
       if (!expr) return;
-  
+
       const f = math.parse(expr);
       const derivative = math.derivative(f, "x");
-      
+
       // Генерация LaTeX
       const latexFunc = f.toTex();
       const latexDeriv = derivative.toTex();
-  
+
       // Обновление отображения формул
       document.getElementById("function-display").innerHTML = `
-        Функция: $\\displaystyle ${latexFunc}$`;
-      
+        Записанная функция: $\\displaystyle ${latexFunc}$`;
+
       document.getElementById("derivative-display").innerHTML = `
-        Производная: $\\displaystyle ${latexDeriv}$`;
-  
+        Полученная производная: $\\displaystyle ${latexDeriv}$`;
+
       // Обновление MathJax
       MathJax.typesetPromise();
-      
+
       // Для текстового поля производной (опционально)
       derivativeInput.value = derivative.toString();
-  
     } catch (e) {
-      document.getElementById("function-display").innerHTML = 
+      document.getElementById("function-display").innerHTML =
         "Ошибка в функции";
-      document.getElementById("derivative-display").innerHTML = 
+      document.getElementById("derivative-display").innerHTML =
         "Ошибка в производной";
       derivativeInput.value = "Не удалось вычислить";
     }
@@ -128,6 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function bisectionMethod(f, epsilon) {
     let x0 = parseFloat(x0all.value);
     let x1 = parseFloat(x1all.value);
+    console.log(f(x0));
+    if (isNaN(f(x0)) || f(x0) === -Infinity || f(x0) === +Infinity) {
+      throw new Error("Ошибка вычисления f(x0)");
+    }
     if (isNaN(x0)) throw new Error("x0 не является числом");
     if (isNaN(x1)) throw new Error("x1 не является числом");
     if (f(x0) * f(x1) >= 0)
@@ -140,18 +146,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     do {
       c = (x0 + x1) / 2;
-      if (isNaN(f(c))) {
-        throw new Error ('Ошибка вычисления f(c)')
+      if (isNaN(f(c)) || f(c) === -Infinity || f(c) === +Infinity) {
+        throw new Error("Ошибка вычисления f(c)");
       }
-      iterations.push({ x0, x1, c, f_c: f(c) });
+      iterations.push({ x0, x1, c, f_c: f(c), f_x0: f(x0) });
 
       if (Math.abs(f(c)) < epsilon) break;
 
       if (f(c) * f(x0) < 0) x1 = c;
       else x0 = c;
-    } while (Math.abs(x1 - x0) > epsilon && iterations.length < 1000);
+    } while (Math.abs(x1 - x0) > epsilon && iterations.length < 10000);
 
-    if (iterations.length >= 1000) throw new Error("Превышено макс. итераций");
+    if (iterations.length >= 10000) throw new Error("Превышено макс. итераций (10^4)");
     return { root: c, iterations };
   }
 
@@ -163,54 +169,63 @@ document.addEventListener("DOMContentLoaded", () => {
 
     do {
       const fx = f(x);
-      if (isNaN(f(x))) {
-        throw new Error ('Ошибка вычисления f(x)')
+      if (isNaN(f(x)) || f(x) === -Infinity || f(x) === +Infinity) {
+        throw new Error("Ошибка вычисления f(x)");
       }
       const dfx = fPrime(x);
+      if (isNaN(dfx) || dfx === -Infinity || dfx === +Infinity) {
+        throw new Error("Ошибка вычисления f(x)");
+      }
       if (Math.abs(dfx) < 1e-10) throw new Error("Производная слишком мала");
 
       const nextX = x - fx / dfx;
       iterations.push({ x, fx, dfx, nextX });
       x = nextX;
-    } while (Math.abs(f(x)) > epsilon && iterations.length < 1000);
+    } while (Math.abs(f(x)) > epsilon && iterations.length < 10000);
 
-    if (iterations.length >= 1000) throw new Error("Превышено макс. итераций");
+    if (iterations.length >= 10000) throw new Error("Превышено макс. итераций (10^4)");
     return { root: x, iterations };
   }
 
   function chordMethod(f, epsilon) {
-    let a = parseFloat(x0all.value);
-    let b = parseFloat(x1all.value);
-    if (f(a) * f(b) >= 0)
+    let x0 = parseFloat(x0all.value);
+    let x1 = parseFloat(x1all.value);
+    if (isNaN(f(x0)) || f(x0) === -Infinity || f(x0) === +Infinity) {
+      throw new Error("Ошибка вычисления f(x0)");
+    }
+    if (isNaN(f(x1)) || f(x1) === -Infinity || f(x1) === +Infinity) {
+      throw new Error("Ошибка вычисления f(x1)");
+    }
+    if (f(x0) * f(x1) >= 0)
       throw new Error(
         "Нет корня в интервале, либо на интервале несколько корней"
       );
 
     const iterations = [];
-    let x,
-      prevX = b;
+    let c,
+      prevX = x1;
 
     do {
-      prevX = x;
-      if (f(b) - f(a) == 0) throw new Error("Возникает деление на 0");
-      x = a - (f(a) * (b - a)) / (f(b) - f(a));
-      if (isNaN(f(x))) {
-        throw new Error ('Ошибка вычисления f(x)')
+      prevX = c;
+      if (f(x1) - f(x0) == 0) throw new Error("Возникает деление на 0");
+      c = x0 - (f(x0) * (x1 - x0)) / (f(x1) - f(x0));
+      if (isNaN(f(c)) || f(c) === -Infinity || f(c) === +Infinity) {
+        throw new Error("Ошибка вычисления f(c)");
       }
-      iterations.push({ a, b, x, f_x: f(x) });
+      iterations.push({ x0, x1, c, f_c: f(c) });
 
-      if (f(x) * f(a) < 0) {
-        b = x;
+      if (f(c) * f(x0) < 0) {
+        x1 = c;
       } else {
-        a = x;
+        x0 = c;
       }
     } while (
-      (Math.abs(x - prevX) > epsilon || Math.abs(f(x)) > epsilon) &&
-      iterations.length < 1000
+      (Math.abs(c - prevX) > epsilon || Math.abs(f(c)) > epsilon) &&
+      iterations.length < 10000
     );
 
-    if (iterations.length >= 1000) throw new Error("Превышено макс. итераций");
-    return { root: x, iterations };
+    if (iterations.length >= 10000) throw new Error("Превышено макс. итераций (10^4)");
+    return { root: c, iterations };
   }
 
   function secantMethod(f, epsilon) {
@@ -220,69 +235,91 @@ document.addEventListener("DOMContentLoaded", () => {
 
     do {
       const f0 = f(x0);
+      if (isNaN(f(x0)) || f(x0) === -Infinity || f(x0) === +Infinity) {
+        throw new Error("Ошибка вычисления f(x0)");
+      }
       const f1 = f(x1);
-      if (f1 - f0 == 0) throw new Error("Возникает деление на 0");
+      if (isNaN(f(x1)) || f(x1) === -Infinity || f(x1) === +Infinity) {
+        throw new Error("Ошибка вычисления f(x1)");
+      }
+      if (f1 - f0 === 0) throw new Error("Возникает деление на 0");
       const dx = (f1 * (x1 - x0)) / (f1 - f0);
-      if (isNaN(dx)) {
-        throw new Error ('Ошибка вычисления dx')
+      if (isNaN(dx) || dx === -Infinity || dx === +Infinity) {
+        throw new Error("Ошибка вычисления dx");
       }
       const nextX = x1 - dx;
 
-      iterations.push({ x0, x1, nextX });
+      iterations.push({ x0, x1, f_x0: f0, f_x1: f1, dx, nextX });
       x0 = x1;
       x1 = nextX;
-    } while (Math.abs(x1 - x0) > epsilon && iterations.length < 1000);
+    } while (Math.abs(x1 - x0) > epsilon && iterations.length < 10000);
 
-    if (iterations.length >= 1000) throw new Error("Превышено макс. итераций");
+    if (iterations.length >= 10000) throw new Error("Превышено макс. итераций (10^4)");
     return { root: x1, iterations };
   }
 
   function goldenSectionMethod(f, epsilon) {
     const phi = (1 + Math.sqrt(5)) / 2;
-    let a = parseFloat(document.getElementById("x0-all").value);
-    let b = parseFloat(document.getElementById("x1").value);
+    let x0 = parseFloat(document.getElementById("x0-all").value);
+    if (isNaN(f(x0)) || f(x0) === -Infinity || f(x0) === +Infinity) {
+      throw new Error("Ошибка вычисления f(x0)");
+    }
+    let x1 = parseFloat(document.getElementById("x1").value);
+    if (isNaN(f(x1)) || f(x1) === -Infinity || f(x1) === +Infinity) {
+      throw new Error("Ошибка вычисления f(x1)");
+    }
     const iterations = [];
 
-    if (f(a) * f(b) >= 0) throw new Error("Нет корня в интервале, либо на интервале несколько корней");
+    if (f(x0) * f(x1) >= 0)
+      throw new Error(
+        "Нет корня в интервале, либо на интервале несколько корней"
+      );
 
-    let x1 = b - (b - a) / phi;
-    let x2 = a + (b - a) / phi;
-    if (isNaN(f(x1))) {
-      throw new Error ('Ошибка вычисления f(x1)')
+    let x0_phi = x1 - (x1 - x0) / phi;
+    let x1_phi = x0 + (x1 - x0) / phi;
+    if (
+      isNaN(f(x0_phi)) ||
+      f(x0_phi) === -Infinity ||
+      f(x0_phi) === +Infinity
+    ) {
+      throw new Error("Ошибка вычисления f(x0_phi)");
     }
-    let f1 = f(x1);
-    if (isNaN(f(x2))) {
-      throw new Error ('Ошибка вычисления f(x2)')
+    let f1 = f(x0_phi);
+    if (
+      isNaN(f(x1_phi)) ||
+      f(x1_phi) === -Infinity ||
+      f(x1_phi) === +Infinity
+    ) {
+      throw new Error("Ошибка вычисления f(x1_phi)");
     }
-    let f2 = f(x2);
+    let f2 = f(x1_phi);
 
+    while (Math.abs(x1 - x0) > epsilon && iterations.length < 10000) {
+      iterations.push({ x0, x1, x0_phi, x1_phi });
 
-    while (Math.abs(b - a) > epsilon) {
-      iterations.push({ a, b, x1, x2 });
-
-      if (f(a) * f1 < 0) {
-        b = x2;
-        x2 = x1;
+      if (f(x0) * f1 < 0) {
+        x1 = x1_phi;
+        x1_phi = x0_phi;
         f2 = f1;
-        x1 = b - (b - a) / phi;
-        f1 = f(x1);
-      } else if (f2 * f(b) < 0) {
-        a = x1;
-        x1 = x2;
+        x0_phi = x1 - (x1 - x0) / phi;
+        f1 = f(x0_phi);
+      } else if (f2 * f(x1) < 0) {
+        x0 = x0_phi;
+        x0_phi = x1_phi;
         f1 = f2;
-        x2 = a + (b - a) / phi;
-        f2 = f(x2);
+        x1_phi = x0 + (x1 - x0) / phi;
+        f2 = f(x1_phi);
       } else {
-        a = x1;
-        b = x2;
-        x1 = b - (b - a) / phi;
-        x2 = a + (b - a) / phi;
-        f1 = f(x1);
-        f2 = f(x2);
+        x0 = x0_phi;
+        x1 = x1_phi;
+        x0_phi = x1 - (x1 - x0) / phi;
+        x1_phi = x0 + (x1 - x0) / phi;
+        f1 = f(x0_phi);
+        f2 = f(x1_phi);
       }
     }
-
-    return { root: (a + b) / 2, iterations };
+    if (iterations.length >= 10000) throw new Error("Превышено макс. итераций (10^4)");
+    return { root: (x0 + x1) / 2, iterations };
   }
 
   function compileFunction(expr) {
@@ -304,26 +341,30 @@ document.addEventListener("DOMContentLoaded", () => {
         Корень: ${precisionResult}<br>
         Итераций: ${iterations.length}
     `;
-    MathJax.typesetPromise(); // Обновить рендер после изменения содержимого
+    MathJax.typesetPromise();
     const iterationsElement = document.getElementById("iterations");
+    document.getElementById("re");
+    document.getElementById("formulas").style.display = "block";
     iterationsElement.style.display = "block";
     iterationsElement.textContent = iterations
-        .map((iter, i) => `Итерация ${i + 1}:\n${JSON.stringify(iter, null, 2)}`)
-        .join("\n\n");
-}
+      .map((iter, i) => `Итерация ${i + 1}:\n${JSON.stringify(iter, null, 2)}`)
+      .join("\n\n");
+  }
 
-function showError(message) {
+  function showError(message) {
+    document.getElementById("formulas").style.display = "none";
     document.getElementById("iterations").style.display = "none";
     document.getElementById("error").textContent = message;
     document.getElementById("error").style.display = "block";
-}
+  }
 
-function clearOutput() {
+  function clearOutput() {
     document.getElementById("output").innerHTML = "";
     document.getElementById("iterations").textContent = "";
     document.getElementById("error").style.display = "none";
     document.getElementById("iterations").style.display = "none";
-}
+    document.getElementById("formulas").style.display = "none";
+  }
 
   function roundToPrecision(root, epsilon) {
     const decimalPlaces = Math.max(
