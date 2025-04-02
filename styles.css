@@ -122,9 +122,26 @@ input[type="radio"] {
 }
 
 .help-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  gap: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0 10px; /* Добавляем отступы от краев */
+}
+
+/* Дополнительные медиа-запросы для мобильной адаптации */
+@media (max-width: 600px) {
+  .help-container {
+      grid-template-columns: 1fr; /* Одна колонка на маленьких экранах */
+      gap: 15px;
+      padding: 0 8px;
+  }
+  
+  .help-section {
+      min-width: 0; /* Важно для предотвращения переполнения */
+      overflow: hidden; /* На всякий случай */
+  }
 }
 
 .help-section {
