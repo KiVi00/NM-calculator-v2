@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("calculatorForm");
   const expressionInput = document.getElementById("expression");
   const epsilonInput = document.getElementById("accuracy");
   const derivativeInput = document.getElementById("derivative");
@@ -22,8 +21,8 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  document.getElementById("solve").addEventListener("click", solve);
   document.getElementById("solve").addEventListener("click", updateDerivative);
+  document.getElementById("solve").addEventListener("click", solve);
 
   function updateInputFields() {
     const method = document.querySelector('input[name="method"]:checked').value;
@@ -41,7 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
       case "newton":
         groups.newton.style.display = "block";
         document.getElementById("derivative-display").style.display = "block";
-
         break;
     }
   }
@@ -67,21 +65,16 @@ document.addEventListener("DOMContentLoaded", () => {
       const f = math.parse(expr);
       const derivative = math.derivative(f, "x");
 
-      // Генерация LaTeX
       const latexFunc = f.toTex();
       const latexDeriv = derivative.toTex();
 
-      // Обновление отображения формул
       document.getElementById("function-display").innerHTML = `
         Записанная функция: $\\displaystyle ${latexFunc}$`;
 
       document.getElementById("derivative-display").innerHTML = `
         Полученная производная: $\\displaystyle ${latexDeriv}$`;
 
-      // Обновление MathJax
       MathJax.typesetPromise();
-
-      // Для текстового поля производной (опционально)
       derivativeInput.value = derivative.toString();
     } catch (e) {
       document.getElementById("function-display").innerHTML =
@@ -323,9 +316,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function compileFunction(expr) {
-    if (expr.trim() == "") {
-      throw new Error("Функция не написана");
-    }
     return (x) => {
       try {
         return math.evaluate(expr, { x });
