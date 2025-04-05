@@ -3,6 +3,10 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: Arial, sans-serif;
   line-height: 1.6;
@@ -18,6 +22,7 @@ body {
   padding: 30px;
   border-radius: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
 }
 
 .input-group {
@@ -117,6 +122,17 @@ input[type="radio"] {
     border: 1px solid #dee2e6;
 }
 
+.help-anchor {
+  color:#4d83bb;
+  margin-bottom: 10px;
+  display: inline-block;
+  text-decoration: none;
+}
+
+.help-anchor:hover {
+  color:#3e6792;
+}
+
 .help-h2 {
     margin-bottom: 20px;
 }
@@ -127,20 +143,19 @@ input[type="radio"] {
   gap: 20px;
   width: 100%;
   box-sizing: border-box;
-  padding: 0 10px; /* Добавляем отступы от краев */
+  padding: 0 10px;
 }
 
-/* Дополнительные медиа-запросы для мобильной адаптации */
 @media (max-width: 600px) {
   .help-container {
-      grid-template-columns: 1fr; /* Одна колонка на маленьких экранах */
+      grid-template-columns: 1fr;
       gap: 15px;
       padding: 0 8px;
   }
   
   .help-section {
-      min-width: 0; /* Важно для предотвращения переполнения */
-      overflow: hidden; /* На всякий случай */
+      min-width: 0;
+      overflow: hidden;
   }
 }
 
