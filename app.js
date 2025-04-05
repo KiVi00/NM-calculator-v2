@@ -127,7 +127,7 @@ function bisectionMethod(f, epsilon) {
   if (isNaN(x1)) throw new Error("x1 не является числом");
   if (f(x0) * f(x1) >= 0)
     throw new Error(
-      "Нет корня в интервале, либо на интервале несколько корней"
+      "Нет корня в интервале, либо метод не сходится"
     );
 
   const iterations = [];
@@ -189,7 +189,7 @@ function chordMethod(f, epsilon) {
   }
   if (f(x0) * f(x1) >= 0)
     throw new Error(
-      "Нет корня в интервале, либо на интервале несколько корней"
+      "Нет корня в интервале, либо метод не сходится"
     );
 
   const iterations = [];
@@ -265,7 +265,7 @@ function goldenSectionMethod(f, epsilon) {
 
   if (f(x0) * f(x1) >= 0)
     throw new Error(
-      "Нет корня в интервале, либо на интервале несколько корней"
+      "Нет корня в интервале, либо метод не сходится"
     );
 
   let x0_phi = x1 - (x1 - x0) / phi;
