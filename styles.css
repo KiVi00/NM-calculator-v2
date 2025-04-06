@@ -122,14 +122,14 @@ input[type="radio"] {
     border: 1px solid #dee2e6;
 }
 
-.help-anchor {
+.anchor {
   color:#4d83bb;
   margin-bottom: 10px;
   display: inline-block;
   text-decoration: none;
 }
 
-.help-anchor:hover {
+.anchor:hover {
   color:#3e6792;
 }
 
