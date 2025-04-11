@@ -47,15 +47,17 @@ button {
   border-radius: 4px;
   cursor: pointer;
   width: 100%;
+  transition: background-color 0.5s ease;
 }
 
 .button-container {
   display: flex;
   justify-content: center;
 }
-
-button:hover {
-  background: #3e6792;
+@media (hover: hover){
+  button:hover {
+    background: #3e6792;
+  }
 }
 
 .error-message {
@@ -127,10 +129,12 @@ input[type="radio"] {
   margin-bottom: 10px;
   display: inline-block;
   text-decoration: none;
+  transition: color 0.5s ease;
 }
-
-.anchor:hover {
-  color:#3e6792;
+@media (hover: hover){
+  .anchor:hover {
+    color:#3e6792;
+  }
 }
 
 .help-h2 {
